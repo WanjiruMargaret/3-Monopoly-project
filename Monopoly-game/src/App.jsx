@@ -1,56 +1,47 @@
-import React, { useState } from "react";
-import DiceForm from "./Components/DiceForm";
-import Board from "./Components/Board";
-import PlayerPanel from "./Components/PlayerPanel";
-import { handlePlayerMove } from "./utilis/MovePlayer";
-import propertiesData from "./data/Properties";
-import { rollDice, initialPlayers } from "./utilis/gameUtils";
+import React, { useReducer } from "react";
+import Dice from "./Components/Dice/DiceForm";
+import Board from "./Components/Board/Board";
+import PlayerPanel from "./Components/Player/PlayerPanel";
+import { rollDice, initialPlayers } from "./utils/GameUtils";
+import { tiles, gameReducer } from "./Game/GameLogic";
+import Tile from "./Components/Board/Board";
+const initialState = {
+  players: initialPlayers,
+  tiles: tiles,
+  currentPlayerIndex: 0,
+};
 
 export default function App() {
-  const [players, setPlayers] = useState(initialPlayers);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
-  const [dice, setDice] = useState([1, 1]);
-  const [properties, setProperties] = useState(propertiesData);
+  const [state, dispatch] = useReducer(gameReducer, initialState);
 
-  const handleRollDice = () => {
-    const die1 = Math.ceil(Math.random() * 6);
-    const die2 = Math.ceil(Math.random() * 6);
-    const total = die1 + die2;
+  const handleDiceRoll = () => {
+    const [die1, die2] = rollDice();
+    const steps = die1 + die2;
 
-    setDice([die1, die2]);
-    movePlayer(total);
-  };
+    // Move player by dispatching MOVE_PLAYER action
+    const currentPlayer = state.players[state.currentPlayerIndex];
 
-  const movePlayer = (steps) => {
-    setPlayers((prevPlayers) => {
-      const updated = [...prevPlayers];
-      const player = updated[currentPlayerIndex];
+    // Calculate new position with wrap around
+    let newPosition = (currentPlayer.position + steps) % state.tiles.length;
 
-      // Skip if bankrupt
-      if (player.isBankrupt) return updated;
-
-      // Skip turn in jail
-      if (player.turnsInJail > 0) {
-        player.turnsInJail -= 1;
-        updated[currentPlayerIndex] = player;
-        return updated;
-      }
-
-      const updatedPlayer = handlePlayerMove(player, steps, properties, setProperties, updated);
-      updated[currentPlayerIndex] = updatedPlayer;
-
-      return updated;
+    dispatch({
+      type: "MOVE_PLAYER",
+      payload: { playerId: currentPlayer.id, toIndex: newPosition },
     });
 
-    setCurrentPlayerIndex((i) => (i + 1) % players.length);
+    // After move, proceed to next turn
+    dispatch({ type: "NEXT_TURN" });
   };
 
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
-      <Dice dice={dice} onRoll={handleRollDice} />
-      <Board players={players} />
-      <PlayerPanel players={players} />
+      <Dice
+        dice={[0, 0]} // Could enhance dice state to show current roll, or ignore for now
+        onRoll={handleDiceRoll}
+      />
+      <Board state={state} dispatch={dispatch} />
+      <PlayerPanel players={state.players} />
     </div>
   );
 }
