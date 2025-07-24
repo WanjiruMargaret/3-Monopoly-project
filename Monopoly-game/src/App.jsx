@@ -1,24 +1,32 @@
 import React, { useState } from "react";
-import DiceForm from "./Components/Dice/DiceForm";
+import DiceForm from "./Components/dice/DiceForm"; // You can remove this if not used
 import Board from "./Components/Board/Board";
 import PlayerPanel from "./Components/Player/PlayerPanel";
 import { handlePlayerMove } from "./utils/MovePlayer";
-import propertiesData from "./Components/Data/Properties";
-import { rollDice, initialPlayers } from "./utils/gameUtils";
+import propertiesData from "./Components/data/Properties";
+import { initialPlayers } from "./utils/gameUtils";
 
 export default function App() {
   const [players, setPlayers] = useState(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState([1, 1]);
   const [properties, setProperties] = useState(propertiesData);
+  const [isRolling, setIsRolling] = useState(false);
 
   const handleRollDice = () => {
+    if (isRolling) return;
+    setIsRolling(true);
+
     const die1 = Math.ceil(Math.random() * 6);
     const die2 = Math.ceil(Math.random() * 6);
     const total = die1 + die2;
 
     setDice([die1, die2]);
-    movePlayer(total);
+
+    setTimeout(() => {
+      movePlayer(total);
+      setIsRolling(false);
+    }, 800); // simulate rolling delay
   };
 
   const movePlayer = (steps) => {
@@ -26,10 +34,8 @@ export default function App() {
       const updated = [...prevPlayers];
       const player = updated[currentPlayerIndex];
 
-      // Skip if bankrupt
       if (player.isBankrupt) return updated;
 
-      // Skip turn in jail
       if (player.turnsInJail > 0) {
         player.turnsInJail -= 1;
         updated[currentPlayerIndex] = player;
@@ -45,11 +51,33 @@ export default function App() {
     setCurrentPlayerIndex((i) => (i + 1) % players.length);
   };
 
+  const handleBuyProperty = (propertyIndex) => {
+    setPlayers((prevPlayers) => {
+      const updated = [...prevPlayers];
+      const player = updated[currentPlayerIndex];
+      const property = properties[propertyIndex];
+
+      if (player.balance >= property.price) {
+        player.balance -= property.price;
+        player.properties.push(propertyIndex);
+        updated[currentPlayerIndex] = player;
+      }
+
+      return updated;
+    });
+  };
+
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
-      <DiceForm dice={dice} onRoll={handleRollDice} />
-      <Board players={players} />
+      <Board
+        players={players}
+        currentPlayer={currentPlayerIndex}
+        dice={dice}
+        isRolling={isRolling}
+        onRollDice={handleRollDice}
+        onBuyProperty={handleBuyProperty}
+      />
       <PlayerPanel players={players} />
     </div>
   );
