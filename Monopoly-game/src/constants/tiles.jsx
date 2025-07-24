@@ -1,0 +1,232 @@
+const tiles = [
+  {
+    name: "GO",
+    type: "go",
+    color: null,
+  },
+  {
+    name: "Mediterranean Avenue",
+    price: 60,
+    color: "brown",
+    type: "property",
+  },
+  {
+    name: "Community Chest",
+    type: "chest",
+    color: null,
+  },
+  {
+    name: "Baltic Avenue",
+    price: 60,
+    color: "brown",
+    type: "property",
+  },
+  {
+    name: "Income Tax",
+    type: "tax",
+    color: null,
+  },
+  {
+    name: "Reading Railroad",
+    price: 200,
+    color: "railroad",
+    type: "property",
+  },
+  {
+    name: "Oriental Avenue",
+    price: 100,
+    color: "lightblue",
+    type: "property",
+  },
+  {
+    name: "Chance",
+    type: "chance",
+    color: null,
+  },
+  {
+    name: "Vermont Avenue",
+    price: 100,
+    color: "lightblue",
+    type: "property",
+  },
+  {
+    name: "Connecticut Avenue",
+    price: 120,
+    color: "lightblue",
+    type: "property",
+  },
+  {
+    name: "Jail / Just Visiting",
+    type: "jail",
+    color: null,
+  },
+  {
+    name: "St. Charles Place",
+    price: 140,
+    color: "pink",
+    type: "property",
+  },
+  {
+    name: "Electric Company",
+    price: 150,
+    type: "utility",
+    color: null,
+  },
+  {
+    name: "States Avenue",
+    price: 140,
+    color: "pink",
+    type: "property",
+  },
+  {
+    name: "Virginia Avenue",
+    price: 160,
+    color: "pink",
+    type: "property",
+  },
+  {
+    name: "Pennsylvania Railroad",
+    price: 200,
+    type: "property",
+    color: "railroad",
+  },
+  {
+    name: "St. James Place",
+    price: 180,
+    color: "orange",
+    type: "property",
+  },
+  {
+    name: "Community Chest",
+    type: "chest",
+    color: null,
+  },
+  {
+    name: "Tennessee Avenue",
+    price: 180,
+    color: "orange",
+    type: "property",
+  },
+  {
+    name: "New York Avenue",
+    price: 200,
+    color: "orange",
+    type: "property",
+  },
+  {
+    name: "Free Parking",
+    type: "parking",
+    color: null,
+  },
+  {
+    name: "Kentucky Avenue",
+    price: 220,
+    color: "red",
+    type: "property",
+  },
+  {
+    name: "Chance",
+    type: "chance",
+    color: null,
+  },
+  {
+    name: "Indiana Avenue",
+    price: 220,
+    color: "red",
+    type: "property",
+  },
+  {
+    name: "Illinois Avenue",
+    price: 240,
+    color: "red",
+    type: "property",
+  },
+  {
+    name: "B&O Railroad",
+    price: 200,
+    type: "property",
+    color: "railroad",
+  },
+  {
+    name: "Atlantic Avenue",
+    price: 260,
+    color: "yellow",
+    type: "property",
+  },
+  {
+    name: "Ventnor Avenue",
+    price: 260,
+    color: "yellow",
+    type: "property",
+  },
+  {
+    name: "Water Works",
+    price: 150,
+    type: "utility",
+    color: null,
+  },
+  {
+    name: "Marvin Gardens",
+    price: 280,
+    color: "yellow",
+    type: "property",
+  },
+  {
+    name: "Go To Jail",
+    type: "gotojail",
+    color: null,
+  },
+  {
+    name: "Pacific Avenue",
+    price: 300,
+    color: "green",
+    type: "property",
+  },
+  {
+    name: "North Carolina Avenue",
+    price: 300,
+    color: "green",
+    type: "property",
+  },
+  {
+    name: "Community Chest",
+    type: "chest",
+    color: null,
+  },
+  {
+    name: "Pennsylvania Avenue",
+    price: 320,
+    color: "green",
+    type: "property",
+  },
+  {
+    name: "Short Line",
+    price: 200,
+    type: "property",
+    color: "railroad",
+  },
+  {
+    name: "Chance",
+    type: "chance",
+    color: null,
+  },
+  {
+    name: "Park Place",
+    price: 350,
+    color: "darkblue",
+    type: "property",
+  },
+  {
+    name: "Luxury Tax",
+    type: "tax",
+    color: null,
+  },
+  {
+    name: "Boardwalk",
+    price: 400,
+    color: "darkblue",
+    type: "property",
+  }
+];
+
+export default tiles;

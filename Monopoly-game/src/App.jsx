@@ -1,16 +1,15 @@
 import React, { useState } from "react";
-import DiceForm from "./Components/dice/DiceForm"; // You can remove this if not used
+import DiceForm from "./Components/dice/DiceForm"; // Optional: remove if unused
 import Board from "./Components/Board/Board";
 import PlayerPanel from "./Components/Player/PlayerPanel";
 import { handlePlayerMove } from "./utils/MovePlayer";
-import propertiesData from "./Components/data/Properties";
 import { initialPlayers } from "./utils/gameUtils";
+import tiles from "./constants/tiles"; // NEW: your tiles file
 
 export default function App() {
   const [players, setPlayers] = useState(initialPlayers);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
   const [dice, setDice] = useState([1, 1]);
-  const [properties, setProperties] = useState(propertiesData);
   const [isRolling, setIsRolling] = useState(false);
 
   const handleRollDice = () => {
@@ -42,7 +41,13 @@ export default function App() {
         return updated;
       }
 
-      const updatedPlayer = handlePlayerMove(player, steps, properties, setProperties, updated);
+      const updatedPlayer = handlePlayerMove(
+        player,
+        steps,
+        tiles, // using tiles instead of propertiesData
+        null, // no setProperties needed
+        updated
+      );
       updated[currentPlayerIndex] = updatedPlayer;
 
       return updated;
@@ -51,15 +56,15 @@ export default function App() {
     setCurrentPlayerIndex((i) => (i + 1) % players.length);
   };
 
-  const handleBuyProperty = (propertyIndex) => {
+  const handleBuyProperty = (tileIndex) => {
     setPlayers((prevPlayers) => {
       const updated = [...prevPlayers];
       const player = updated[currentPlayerIndex];
-      const property = properties[propertyIndex];
+      const tile = tiles[tileIndex];
 
-      if (player.balance >= property.price) {
-        player.balance -= property.price;
-        player.properties.push(propertyIndex);
+      if (tile.type === "property" && player.balance >= tile.price) {
+        player.balance -= tile.price;
+        player.properties.push(tileIndex);
         updated[currentPlayerIndex] = player;
       }
 
@@ -77,6 +82,7 @@ export default function App() {
         isRolling={isRolling}
         onRollDice={handleRollDice}
         onBuyProperty={handleBuyProperty}
+        tiles={tiles}
       />
       <PlayerPanel players={players} />
     </div>
