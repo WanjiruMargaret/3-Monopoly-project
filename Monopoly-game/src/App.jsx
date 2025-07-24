@@ -1,4 +1,4 @@
-import StartScreen from './components/StartScreen'
+import StartScreen from './features/StartScreen'
 import GamePage from './pages/GamePage'
 import { GameProvider, useGame } from './context/GameContext'
 import './App.css'
