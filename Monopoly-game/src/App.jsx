@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import DiceForm from "./Components/DiceForm";
-import Board from "./Components/Board";
-import PlayerPanel from "./Components/PlayerPanel";
-import { handlePlayerMove } from "./utilis/MovePlayer";
-import propertiesData from "./data/Properties";
-import { rollDice, initialPlayers } from "./utilis/gameUtils";
+import DiceForm from "./Components/Dice/DiceForm";
+import Board from "./Components/Board/Board";
+import PlayerPanel from "./Components/Player/PlayerPanel";
+import { handlePlayerMove } from "./utils/MovePlayer";
+import propertiesData from "./Components/Data/Properties";
+import { rollDice, initialPlayers } from "./utils/gameUtils";
 
 export default function App() {
   const [players, setPlayers] = useState(initialPlayers);
@@ -48,7 +48,7 @@ export default function App() {
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
-      <Dice dice={dice} onRoll={handleRollDice} />
+      <DiceForm dice={dice} onRoll={handleRollDice} />
       <Board players={players} />
       <PlayerPanel players={players} />
     </div>
