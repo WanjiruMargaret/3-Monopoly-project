@@ -1,28 +1,39 @@
-export function handlePlayerMove(player, steps, properties, setProperties, allPlayers) {
-  const boardSize = properties.length;
-  let newPosition = (player.position + steps) % boardSize;
-  player.position = newPosition;
+export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
+  let newPosition = (player.position + steps) % tiles.length;
 
-  const landedProperty = properties[newPosition];
-
-  // Placeholder: property logic
-  if (landedProperty.owner && landedProperty.owner !== player.name) {
-    const rent = landedProperty.rent;
-    player.money -= rent;
-    const owner = allPlayers.find(p => p.name === landedProperty.owner);
-    if (owner) {
-      owner.money += rent;
-    }
-  } else if (!landedProperty.owner && player.money >= landedProperty.price) {
-    player.money -= landedProperty.price;
-    player.properties.push(landedProperty.name);
-    landedProperty.owner = player.name;
-    setProperties([...properties]);
+  // Passed GO?
+  if (newPosition < player.position) {
+    player.balance += 200;
+    console.log(`${player.name} passed GO! +$200`);
   }
 
-  // Check for bankruptcy
-  if (player.money < 0) {
-    player.isBankrupt = true;
+  const tile = tiles[newPosition];
+  player.position = newPosition;
+
+  switch (tile.type) {
+    case "tax":
+      player.balance -= 100;
+      console.log(`${player.name} paid tax.`);
+      break;
+
+    case "gotojail":
+      player.position = 10; // Jail position
+      player.turnsInJail = 2;
+      console.log(`${player.name} goes to jail.`);
+      break;
+
+    case "property":
+      const owner = allPlayers.find((p) => p.properties.includes(newPosition));
+      if (owner && owner.id !== player.id) {
+        player.balance -= tile.rent || 25;
+        owner.balance += tile.rent || 25;
+        console.log(`${player.name} paid rent to ${owner.name}`);
+      }
+      break;
+
+    // Add future logic for 'chance', 'chest', etc.
+    default:
+      break;
   }
 
   return player;

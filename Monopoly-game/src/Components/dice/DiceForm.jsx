@@ -1,4 +1,5 @@
 import React from "react";
+import "./Dice.css";
 
 export default function DiceForm({ dice, onRoll }) {
   return (
