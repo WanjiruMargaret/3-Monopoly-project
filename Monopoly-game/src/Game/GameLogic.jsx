@@ -1,147 +1,96 @@
-// src/GameLogic.jsx
-
-export const TILE_TYPES = {
-  GO: 'GO',
-  PROPERTY: 'PROPERTY',
-  CHANCE: 'CHANCE',
-  CHEST: 'CHEST',
-  JAIL: 'JAIL',
-};
-
+// Game/GameLogic.js
 export const tiles = [
-  { id: 0, name: 'GO', type: TILE_TYPES.GO },
-  { id: 1, name: 'Mediterranean Ave', type: TILE_TYPES.PROPERTY, price: 60, rent: 2 },
-  { id: 2, name: 'Community Chest', type: TILE_TYPES.CHEST },
-  { id: 3, name: 'Baltic Ave', type: TILE_TYPES.PROPERTY, price: 60, rent: 4 },
-  { id: 4, name: 'Jail', type: TILE_TYPES.JAIL },
-  { id: 5, name: 'Chance', type: TILE_TYPES.CHANCE },
-  { id: 6, name: 'Boardwalk', type: TILE_TYPES.PROPERTY, price: 400, rent: 50 },
+  { name: "GO", type: "start" },
+  { name: "Mediterranean Avenue", type: "property", price: 60, rent: 2 },
+  { name: "Community Chest", type: "community" },
+  { name: "Baltic Avenue", type: "property", price: 60, rent: 4 },
+  { name: "Income Tax", type: "tax", amount: 200 },
+  { name: "Reading Railroad", type: "property", price: 200, rent: 25 },
+  { name: "Chance", type: "chance" },
+  { name: "Jail", type: "jail" },
+  { name: "Vermont Avenue", type: "property", price: 100, rent: 6 },
+  // Add more tiles as needed
 ];
 
-const chanceCards = [
-  {
-    text: 'Advance to GO',
-    action: (player, dispatch) => {
-      dispatch({ type: 'MOVE_PLAYER', payload: { playerId: player.id, toIndex: 0 } });
-      dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: 200 } });
-    },
-  },
-  {
-    text: 'Pay school fees of $150',
-    action: (player, dispatch) => {
-      dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: -150 } });
-    },
-  },
-];
-
-const chestCards = [
-  {
-    text: 'Bank error in your favor. Collect $200.',
-    action: (player, dispatch) => {
-      dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: 200 } });
-    },
-  },
-  {
-    text: 'Doctor’s fees. Pay $50.',
-    action: (player, dispatch) => {
-      dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: -50 } });
-    },
-  },
-];
-
-export function handleTileAction({ tile, player, dispatch }) {
-  switch (tile.type) {
-    case 'GO':
-      dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: 200 } });
-      break;
-
-    case 'PROPERTY':
-      if (!tile.owner) {
-        const wantsToBuy = window.confirm(`${player.name}, buy ${tile.name} for $${tile.price}?`);
-        if (wantsToBuy && player.money >= tile.price) {
-          dispatch({ type: 'BUY_PROPERTY', payload: { tileId: tile.id, playerId: player.id } });
-        }
-      } else if (tile.owner !== player.id) {
-        dispatch({ type: 'PAY_RENT', payload: { fromId: player.id, toId: tile.owner, amount: tile.rent } });
-      }
-      break;
-
-    case 'CHANCE':
-      const chance = chanceCards[Math.floor(Math.random() * chanceCards.length)];
-      alert(`Chance: ${chance.text}`);
-      chance.action(player, dispatch);
-      break;
-
-    case 'CHEST':
-      const chest = chestCards[Math.floor(Math.random() * chestCards.length)];
-      alert(`Community Chest: ${chest.text}`);
-      chest.action(player, dispatch);
-      break;
-
-    case 'JAIL':
-      alert(`${player.name} is just visiting jail.`);
-      break;
-
-    default:
-      break;
-  }
-}
-
-export const gameReducer = (state, action) => {
+export function gameReducer(state, action) {
   switch (action.type) {
-    case 'ADD_MONEY':
-      return {
-        ...state,
-        players: state.players.map(p =>
-          p.id === action.payload.playerId
-            ? { ...p, money: p.money + action.payload.amount }
-            : p
-        ),
-      };
+    case "MOVE_PLAYER": {
+      const { playerId, toIndex } = action.payload;
+      const players = [...state.players];
+      const player = players.find(p => p.id === playerId);
+      const tile = state.tiles[toIndex];
 
-    case 'BUY_PROPERTY':
-      const tileToBuy = state.tiles.find(t => t.id === action.payload.tileId);
-      return {
-        ...state,
-        players: state.players.map(p =>
-          p.id === action.payload.playerId
-            ? {
-                ...p,
-                money: p.money - tileToBuy.price,
-                properties: [...p.properties, tileToBuy.id],
-              }
-            : p
-        ),
-        tiles: state.tiles.map(t =>
-          t.id === tileToBuy.id ? { ...t, owner: action.payload.playerId } : t
-        ),
-      };
+      player.position = toIndex;
 
-    case 'PAY_RENT':
-      return {
-        ...state,
-        players: state.players.map(p => {
-          if (p.id === action.payload.fromId) return { ...p, money: p.money - action.payload.amount };
-          if (p.id === action.payload.toId) return { ...p, money: p.money + action.payload.amount };
-          return p;
-        }),
-      };
+      // Handle tile logic
+      if (tile.type === "property" && tile.owner && tile.owner !== playerId) {
+        const owner = players.find(p => p.id === tile.owner);
+        const rent = tile.rent;
 
-    case 'MOVE_PLAYER':
-      return {
-        ...state,
-        players: state.players.map(p =>
-          p.id === action.payload.playerId ? { ...p, position: action.payload.toIndex } : p
-        ),
-      };
+        player.balance -= rent;
+        owner.balance += rent;
 
-    case 'NEXT_TURN':
+        // Check if player goes bankrupt
+        if (player.balance < 0) {
+          player.isBankrupt = true;
+          player.properties = [];
+        }
+      }
+
+      if (tile.type === "tax") {
+        player.balance -= tile.amount;
+        if (player.balance < 0) player.isBankrupt = true;
+      }
+
+      if (tile.type === "jail") {
+        player.turnsInJail = 2;
+      }
+
+      // Placeholder for Chance & Community Chest
+      if (tile.type === "chance" || tile.type === "community") {
+        console.log(`${tile.type} card drawn. Placeholder effect.`);
+      }
+
+      return { ...state, players };
+    }
+
+    case "BUY_PROPERTY": {
+      const { playerId, tileIndex } = action.payload;
+      const players = [...state.players];
+      const player = players.find(p => p.id === playerId);
+      const tile = state.tiles[tileIndex];
+
+      if (tile.type === "property" && !tile.owner && player.balance >= tile.price) {
+        player.balance -= tile.price;
+        player.properties.push(tileIndex);
+        tile.owner = playerId;
+      }
+
       return {
         ...state,
-        currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
+        players,
+        tiles: [...state.tiles],
       };
+    }
+
+    case "NEXT_TURN": {
+      const nextIndex = (state.currentPlayerIndex + 1) % state.players.length;
+      return { ...state, currentPlayerIndex: nextIndex };
+    }
+
+    case "SKIP_TURN_FOR_JAIL": {
+      const players = [...state.players];
+      const player = players.find(p => p.id === action.payload);
+      if (player.turnsInJail > 0) {
+        player.turnsInJail -= 1;
+      }
+      return { ...state, players };
+    }
+
+    case "LOAD_SAVED_STATE":
+      return action.payload;
 
     default:
       return state;
   }
-};
+}

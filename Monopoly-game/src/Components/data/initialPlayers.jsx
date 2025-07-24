@@ -1,8 +1,4 @@
-import { rollDice } from "./rollDice";
-import { handlePlayerMove } from "./handlePlayerMove";
-import { buyProperty } from "./buyProperty";
-
-export const initialPlayers = [
+const initialPlayers = [
   {
     id: 1,
     name: "Player 1",
@@ -11,7 +7,7 @@ export const initialPlayers = [
     balance: 1500,
     properties: [],
     turnsInJail: 0,
-    bankrupt: false,
+    isBankrupt: false,
   },
   {
     id: 2,
@@ -21,7 +17,9 @@ export const initialPlayers = [
     balance: 1500,
     properties: [],
     turnsInJail: 0,
-    bankrupt: false,
+    isBankrupt: false,
   },
+  // Add more players here if needed
 ];
 
+export default initialPlayers;
