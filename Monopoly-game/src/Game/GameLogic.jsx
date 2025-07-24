@@ -1,4 +1,4 @@
-// src/GameLogic.jsx
+// src/Game/GameLogic.jsx
 
 export const TILE_TYPES = {
   GO: 'GO',
@@ -51,11 +51,11 @@ const chestCards = [
 
 export function handleTileAction({ tile, player, dispatch }) {
   switch (tile.type) {
-    case 'GO':
+    case TILE_TYPES.GO:
       dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: 200 } });
       break;
 
-    case 'PROPERTY':
+    case TILE_TYPES.PROPERTY:
       if (!tile.owner) {
         const wantsToBuy = window.confirm(`${player.name}, buy ${tile.name} for $${tile.price}?`);
         if (wantsToBuy && player.money >= tile.price) {
@@ -66,19 +66,19 @@ export function handleTileAction({ tile, player, dispatch }) {
       }
       break;
 
-    case 'CHANCE':
+    case TILE_TYPES.CHANCE:
       const chance = chanceCards[Math.floor(Math.random() * chanceCards.length)];
       alert(`Chance: ${chance.text}`);
       chance.action(player, dispatch);
       break;
 
-    case 'CHEST':
+    case TILE_TYPES.CHEST:
       const chest = chestCards[Math.floor(Math.random() * chestCards.length)];
       alert(`Community Chest: ${chest.text}`);
       chest.action(player, dispatch);
       break;
 
-    case 'JAIL':
+    case TILE_TYPES.JAIL:
       alert(`${player.name} is just visiting jail.`);
       break;
 

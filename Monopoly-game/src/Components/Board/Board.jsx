@@ -3,8 +3,20 @@ import Tile from "./Tile";
 import { tiles } from "../../Game/GameLogic";
 
 export default function Board({ state, dispatch }) {
-  const { players } = state;
-  const currentPlayer = players[state.currentPlayerIndex];
+  const { players, currentPlayerIndex } = state;
+  const currentPlayer = players[currentPlayerIndex];
+
+  // Function to handle rolling the dice for the current player
+  const handleRollDice = () => {
+    // Roll dice action, which will also move the player
+    const roll = Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1; // Dice roll
+    const newPosition = (currentPlayer.position + roll) % tiles.length; // Wrap around the board
+    dispatch({ type: "MOVE_PLAYER", payload: { playerId: currentPlayer.id, toIndex: newPosition } });
+
+    // Handle the tile action after moving
+    const tile = tiles[newPosition];
+    dispatch({ type: "NEXT_TURN" }); // Move to the next player after the current one completes their turn
+  };
 
   return (
     <div
@@ -27,7 +39,11 @@ export default function Board({ state, dispatch }) {
           )}
         </div>
       ))}
+      
+      {/* Button to trigger dice roll for the current player */}
+      <button onClick={handleRollDice}>Roll Dice</button>
     </div>
   );
 }
+
 
