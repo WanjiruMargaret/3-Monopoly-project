@@ -48,13 +48,6 @@ function Property({ property, index, players, isActive, onBuyProperty }) {
 export default function Board({ players, currentPlayer, dice, isRolling, onRollDice, onBuyProperty }) {
   return (
     <div className="board">
-      {tiles.map((tile, idx) => {
-        const isPlayerHere = players.some(p => p.position === idx);
-        return (
-          <Tile key={idx} tile={tile} isPlayerHere={isPlayerHere} />
-        );
-      })}
-
       {/* Top row */}
       <div className="board-row-top">
         {tiles.slice(20, 31).reverse().map((property, index) => (
@@ -133,3 +126,4 @@ export default function Board({ players, currentPlayer, dice, isRolling, onRollD
     </div>
   );
 }
+
