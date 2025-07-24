@@ -1,30 +1,56 @@
-import StartScreen from './features/StartScreen'
-import GamePage from './pages/GamePage'
-import { GameProvider, useGame } from './context/GameContext'
-import './App.css'
-import './styles/board.css'
+import React, { useState } from "react";
+import DiceForm from "./Components/Dice/DiceForm";
+import Board from "./Components/Board/Board";
+import PlayerPanel from "./Components/Player/PlayerPanel";
+import { handlePlayerMove } from "./utils/MovePlayer";
+import propertiesData from "./Components/Data/Properties";
+import { rollDice, initialPlayers } from "./utils/gameUtils";
 
-function AppContent() {
-  const { state, dispatch } = useGame()
+export default function App() {
+  const [players, setPlayers] = useState(initialPlayers);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [dice, setDice] = useState([1, 1]);
+  const [properties, setProperties] = useState(propertiesData);
 
-  const startGame = () => {
-    dispatch({ type: 'START_GAME' })
-    dispatch({ type: 'ADD_LOG', payload: 'Game started! Player 1 goes first.' })
-  }
+  const handleRollDice = () => {
+    const die1 = Math.ceil(Math.random() * 6);
+    const die2 = Math.ceil(Math.random() * 6);
+    const total = die1 + die2;
 
-  if (!state.gameStarted) {
-    return <StartScreen onStartGame={startGame} />
-  }
+    setDice([die1, die2]);
+    movePlayer(total);
+  };
 
-  return <GamePage />
-}
+  const movePlayer = (steps) => {
+    setPlayers((prevPlayers) => {
+      const updated = [...prevPlayers];
+      const player = updated[currentPlayerIndex];
 
-function App() {
+      // Skip if bankrupt
+      if (player.isBankrupt) return updated;
+
+      // Skip turn in jail
+      if (player.turnsInJail > 0) {
+        player.turnsInJail -= 1;
+        updated[currentPlayerIndex] = player;
+        return updated;
+      }
+
+      const updatedPlayer = handlePlayerMove(player, steps, properties, setProperties, updated);
+      updated[currentPlayerIndex] = updatedPlayer;
+
+      return updated;
+    });
+
+    setCurrentPlayerIndex((i) => (i + 1) % players.length);
+  };
+
   return (
-    <GameProvider>
-      <AppContent />
-    </GameProvider>
-  )
+    <div className="app">
+      <h1>Monopoly Game MVP</h1>
+      <DiceForm dice={dice} onRoll={handleRollDice} />
+      <Board players={players} />
+      <PlayerPanel players={players} />
+    </div>
+  );
 }
-
-export default App
