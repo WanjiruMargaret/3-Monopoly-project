@@ -1,14 +1,100 @@
 .board {
   display: grid;
-  grid-template-columns: repeat(11, 60px);
-  grid-template-rows: repeat(11, 60px);
-  gap: 2px;
-  background: #2e2e2e;
-  padding: 10px;
-  border-radius: 12px;
-  width: fit-content;
-  margin: 0 auto;
+  grid-template-areas:
+    "top    top    top    top"
+    "left   center center right"
+    "bottom bottom bottom bottom";
+  grid-template-columns: auto 1fr 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 10px;
+  padding: 20px;
+  background-color: #1f1f1f;
+  border-radius: 15px;
+  color: white;
+  min-height:90vh ;
 }
+
+.board-row-top {
+  grid-area: top;
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: space-between;
+}
+
+.board-row-bottom {
+  grid-area: bottom;
+  display: flex;
+  justify-content: space-between;
+}
+
+.board-col-left {
+  grid-area: left;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.board-col-right {
+  grid-area: right;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: space-between;
+}
+
+.board-center {
+  grid-area: center;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.board-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.board-dice {
+  display: flex;
+  gap: 10px;
+}
+
+.dice {
+  font-size: 1.5rem;
+  background: white;
+  color: black;
+  padding: 10px;
+  border-radius: 8px;
+  width: 40px;
+  text-align: center;
+}
+
+.board-roll-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #ffce00;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.board-roll-btn:disabled {
+  background-color: #999;
+  cursor: not-allowed;
+}
+
+.property-name,
+.property-price,
+.property-rent {
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 2px;
+}
+
 
 .tile {
   border: 2px solid #222;

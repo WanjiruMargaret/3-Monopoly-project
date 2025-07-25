@@ -94,3 +94,14 @@ export function gameReducer(state, action) {
       return state;
   }
 }
+
+export function handleTileAction(player, tile, state) {
+  // Example logic for handling tile actions
+  if (tile.type === "property" && tile.owner && tile.owner !== player.id) {
+    const owner = state.players.find(p => p.id === tile.owner);
+    player.balance -= tile.rent;
+    owner.balance += tile.rent;
+    if (player.balance < 0) player.isBankrupt = true;
+  }
+  // Add more logic as needed
+}

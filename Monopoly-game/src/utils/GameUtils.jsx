@@ -1,7 +1,8 @@
-import { rollDice } from "./rollDice";
-import { handlePlayerMove } from "./handlePlayerMove";
-import { buyProperty } from "./buyProperty";
-
+export function rollDice() {
+  const die1 = Math.floor(Math.random() * 6) + 1;
+  const die2 = Math.floor(Math.random() * 6) + 1;
+  return [die1, die2];
+}
 export const initialPlayers = [
   {
     id: 1,
