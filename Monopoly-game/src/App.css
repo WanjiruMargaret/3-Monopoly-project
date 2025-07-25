@@ -100,14 +100,16 @@
 
 /* Player Tokens */
 .player-token {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: 2px solid #333;
   display: inline-block;
   margin: 1px;
   animation: bounce 2s infinite;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  position: relative;
+  z-index: 10;
 }
 
 .player-red { background: radial-gradient(circle, #f44336, #d32f2f); }
@@ -238,6 +240,24 @@
   border-color: #4caf50;
   background: #f1f8e9;
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+/* Game Container Layout */
+.game-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e8f5e8, #f1f8e9);
+  align-items: center;
+  justify-content: center;
+}
+
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
 }
 
 /* Utility Classes */
