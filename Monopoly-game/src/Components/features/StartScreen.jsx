@@ -9,10 +9,10 @@ export default function StartScreen({ onStartGame }) {
         <h1 className="text-4xl font-bold text-gray-800 mb-2">🎲 MONOPOLY 🏠</h1>
         <p className="text-gray-600 mb-8">The Classic Property Trading Game</p>
         
-        <div className="space-y-4">
+        <div className="space-y-4 , start-screen">
           <button
             onClick={onStartGame}
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors"
+            className="start-button w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg text-lg transition-colors"
           >
             🎯 Start Game
           </button>
