@@ -1,3 +1,4 @@
+
 // ✅ React & hooks
 import React, { useReducer, useState, useEffect } from "react";
 
@@ -9,13 +10,14 @@ import PlayerPanel from "./Components/Player/PlayerPanel";
 // ✅ Utilities
 import { rollDice, initialPlayers } from "./utils/GameUtils";
 import { tiles, gameReducer } from "./Game/GameLogic";
-import { buyProperty } from "./utils/buyproperty";
+
 
 // ✅ Initial reducer state
 const initialState = {
   players: initialPlayers,
   tiles: tiles,
   currentPlayerIndex: 0,
+  lastCardDrawn:null,
 };
 
 export default function App() {
@@ -42,6 +44,14 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("monopoly-game-state", JSON.stringify(state));
   }, [state]);
+
+  // ✅ Alert when a Chance or Community Chest card is drawn
+useEffect(() => {
+  if (state.lastCardDrawn) {
+    alert(`${state.lastCardDrawn.type.toUpperCase()} CARD:\n${state.lastCardDrawn.text}`);
+  }
+}, [state.lastCardDrawn]);
+
 
   // ✅ Handle dice roll and turn logic
   const handleDiceRoll = () => {

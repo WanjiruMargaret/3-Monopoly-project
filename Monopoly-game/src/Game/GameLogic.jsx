@@ -51,7 +51,7 @@ export function gameReducer(state, action) {
         console.log(`${tile.type} card drawn. Placeholder effect.`);
       }
 
-      return { ...state, players };
+      return { ...state, players: players, tiles: [...state.tiles] };
     }
 
     case "BUY_PROPERTY": {
