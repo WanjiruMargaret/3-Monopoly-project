@@ -9,24 +9,22 @@ import PlayerPanel from "./Components/Player/PlayerPanel";
 // ✅ Utilities
 import { rollDice, initialPlayers } from "./utils/GameUtils";
 import { tiles, gameReducer } from "./Game/GameLogic";
-import { buyProperty } from "./utils/buyproperty";
+
 
 // ✅ Initial reducer state
 const initialState = {
   players: initialPlayers,
   tiles: tiles,
   currentPlayerIndex: 0,
+  lastCardDrawn: null,
 };
 
 export default function App() {
-  // ✅ Game state managed by reducer
   const [state, dispatch] = useReducer(gameReducer, initialState);
-
-  // ✅ UI state
   const [dice, setDice] = useState([1, 1]);
   const [isRolling, setIsRolling] = useState(false);
 
-  // ✅ Load saved game if available
+  // ✅ Load saved game
   useEffect(() => {
     const saved = localStorage.getItem("monopoly-game-state");
     if (saved) {
@@ -38,12 +36,19 @@ export default function App() {
     }
   }, []);
 
-  // ✅ Save game on every state change
+  // ✅ Save game on every state update
   useEffect(() => {
     localStorage.setItem("monopoly-game-state", JSON.stringify(state));
   }, [state]);
 
-  // ✅ Handle dice roll and turn logic
+  // ✅ Alert if a card is drawn
+  useEffect(() => {
+    if (state.lastCardDrawn) {
+      alert(`CARD DRAWN:\n${state.lastCardDrawn.text}`);
+    }
+  }, [state.lastCardDrawn]);
+
+  // ✅ Handle dice roll
   const handleDiceRoll = () => {
     if (isRolling) return;
 
@@ -55,7 +60,7 @@ export default function App() {
     setTimeout(() => {
       const currentPlayer = state.players[state.currentPlayerIndex];
 
-      // ✅ Skip if bankrupt
+      // ✅ Skip bankrupt
       if (currentPlayer.isBankrupt) {
         dispatch({ type: "NEXT_TURN" });
         setIsRolling(false);
@@ -70,9 +75,8 @@ export default function App() {
         return;
       }
 
-      // ✅ Move player
+      // ✅ Move player and trigger tile logic
       const newPosition = (currentPlayer.position + steps) % state.tiles.length;
-
       dispatch({
         type: "MOVE_PLAYER",
         payload: { playerId: currentPlayer.id, toIndex: newPosition },
@@ -80,10 +84,10 @@ export default function App() {
 
       dispatch({ type: "NEXT_TURN" });
       setIsRolling(false);
-    }, 800); // Delay for animation
+    }, 800);
   };
 
-  // ✅ Handle property purchase
+  // ✅ Buy property
   const handleBuyProperty = (tileIndex) => {
     dispatch({
       type: "BUY_PROPERTY",
@@ -98,7 +102,7 @@ export default function App() {
     <div className="app">
       <h1>Monopoly Game MVP</h1>
 
-      {/* ✅ Main board */}
+      {/* ✅ Board */}
       <Board
         players={state.players}
         currentPlayer={state.currentPlayerIndex}
@@ -109,12 +113,11 @@ export default function App() {
         tiles={state.tiles}
       />
 
-      {/* ✅ Sidebar panel */}
+      {/* ✅ Sidebar */}
       <PlayerPanel players={state.players} />
 
-      {/* ✅ Dice display */}
+      {/* ✅ Dice control */}
       <Dice dice={dice} onRoll={handleDiceRoll} />
     </div>
   );
 }
-

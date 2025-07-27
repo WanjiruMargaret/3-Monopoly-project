@@ -1,8 +1,9 @@
-import tiles from "../../constants/tiles";
+// src/Components/Board/Board.jsx
 import React from "react";
-import Tile from "./Tile";
+import tiles from "../../constants/tiles";
 import "../../style/board.css";
 
+// Property Component
 function Property({ property, index, players, isActive, onBuyProperty }) {
   const playersOnSpace = players.filter(p => p.position === index);
   const isOwned = players.some(p => p.properties.includes(index));
@@ -13,39 +14,46 @@ function Property({ property, index, players, isActive, onBuyProperty }) {
       onBuyProperty(index);
     }
   };
-  const colorClass = property.color ? `tile-property tile-${property.color}` : "tile-property";
+
+  const colorClass = property.color
+    ? `tile-property tile-${property.color}`
+    : "tile-property";
 
   return (
-    <div
-      className={colorClass}
-      onClick={handleClick}
-    >
-      {property.color && (
-        <div className="color-bar"></div>
-      )}
+    <div className={colorClass} onClick={handleClick}>
+      {property.color && <div className="color-bar"></div>}
       <div className="property-name">{property.name}</div>
-      {property.price > 0 && (
-        <div className="property-price">${property.price}</div>
-      )}
-      {property.rent > 0 && (
-        <div className="property-rent">Rent ${property.rent}</div>
-      )}
-      {isOwned && owner && (
-        <div className="property-owner"></div>
-      )}
+      {property.price > 0 && <div className="property-price">${property.price}</div>}
+      {property.rent > 0 && <div className="property-rent">Rent ${property.rent}</div>}
+      {isOwned && owner && <div className="property-owner">🏠</div>}
+
+      {/* Show player tokens */}
       <div className="property-players">
         {playersOnSpace.map(player => (
           <div
             key={player.id}
             className="property-player"
-          ></div>
+            title={player.name}
+            style={{
+              backgroundColor: player.color || "gray",
+              border: "1px solid black",
+            }}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-export default function Board({ players, currentPlayer, dice, isRolling, onRollDice, onBuyProperty }) {
+// Main Board
+export default function Board({
+  players,
+  currentPlayer,
+  dice,
+  isRolling,
+  onRollDice,
+  onBuyProperty,
+}) {
   return (
     <div className="board">
       {/* Top row */}
@@ -126,4 +134,3 @@ export default function Board({ players, currentPlayer, dice, isRolling, onRollD
     </div>
   );
 }
-
