@@ -1,4 +1,6 @@
 // Game/GameLogic.js
+import { chanceCards, communityCards } from "./cards"; // Make sure this path is correct!
+
 export const tiles = [
   { name: "GO", type: "start" },
   { name: "Mediterranean Avenue", type: "property", price: 60, rent: 2 },
@@ -9,8 +11,12 @@ export const tiles = [
   { name: "Chance", type: "chance" },
   { name: "Jail", type: "jail" },
   { name: "Vermont Avenue", type: "property", price: 100, rent: 6 },
-  // Add more tiles as needed
 ];
+
+function getRandomCard(cards) {
+  const index = Math.floor(Math.random() * cards.length);
+  return cards[index];
+}
 
 export function gameReducer(state, action) {
   switch (action.type) {
@@ -22,7 +28,7 @@ export function gameReducer(state, action) {
 
       player.position = toIndex;
 
-      // Handle tile logic
+      // Property rent logic
       if (tile.type === "property" && tile.owner && tile.owner !== playerId) {
         const owner = players.find(p => p.id === tile.owner);
         const rent = tile.rent;
@@ -30,28 +36,45 @@ export function gameReducer(state, action) {
         player.balance -= rent;
         owner.balance += rent;
 
-        // Check if player goes bankrupt
         if (player.balance < 0) {
           player.isBankrupt = true;
           player.properties = [];
         }
       }
 
+      // Tax logic
       if (tile.type === "tax") {
         player.balance -= tile.amount;
         if (player.balance < 0) player.isBankrupt = true;
       }
 
+      // Jail logic
       if (tile.type === "jail") {
         player.turnsInJail = 2;
       }
 
-      // Placeholder for Chance & Community Chest
-      if (tile.type === "chance" || tile.type === "community") {
-        console.log(`${tile.type} card drawn. Placeholder effect.`);
+      // Chance or Community Chest logic
+      if (tile.type === "chance") {
+        const card = getRandomCard(chanceCards);
+        const updatedPlayer = card.effect(player);
+        player.balance = updatedPlayer.money ?? player.balance;
+        player.position = updatedPlayer.position ?? player.position;
+        player.turnsInJail = updatedPlayer.turnsInJail ?? player.turnsInJail;
+
+        alert(`Chance Card:\n${card.text}`);
       }
 
-      return { ...state, players: players, tiles: [...state.tiles] };
+      if (tile.type === "community") {
+        const card = getRandomCard(communityCards);
+        const updatedPlayer = card.effect(player);
+        player.balance = updatedPlayer.money ?? player.balance;
+        player.position = updatedPlayer.position ?? player.position;
+        player.turnsInJail = updatedPlayer.turnsInJail ?? player.turnsInJail;
+
+        alert(`Community Chest:\n${card.text}`);
+      }
+
+      return { ...state, players, tiles: [...state.tiles] };
     }
 
     case "BUY_PROPERTY": {
@@ -96,12 +119,10 @@ export function gameReducer(state, action) {
 }
 
 export function handleTileAction(player, tile, state) {
-  // Example logic for handling tile actions
   if (tile.type === "property" && tile.owner && tile.owner !== player.id) {
     const owner = state.players.find(p => p.id === tile.owner);
     player.balance -= tile.rent;
     owner.balance += tile.rent;
     if (player.balance < 0) player.isBankrupt = true;
   }
-  // Add more logic as needed
 }
