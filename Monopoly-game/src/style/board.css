@@ -1,0 +1,194 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(11, 60px);
+  grid-template-rows: repeat(11, 60px);
+  gap: 2px;
+  background: #2e2e2e;
+  padding: 10px;
+  border-radius: 12px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.tile {
+  border: 2px solid #222;
+  border-radius: 6px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.95em;
+  min-width: 60px;
+  min-height: 60px;
+  position: relative;
+  transition: box-shadow 0.2s;
+  padding: 6px 2px;
+  box-sizing: border-box;
+}
+
+/* Monopoly property colors (official palette) */
+.tile-brown { background: #6C3483; color: #fff; }         /* Mediterranean/Baltic */
+.tile-lightblue { background: #5DADE2; color: #fff; }     /* Oriental/Vermont/Connecticut */
+.tile-pink { background: #C39BD3; color: #fff; }          /* St. Charles/States/Virginia */
+.tile-orange { background: #F5B041; color: #222; }        /* St. James/Tennessee/New York */
+.tile-red { background: #CB4335; color: #fff; }           /* Kentucky/Indiana/Illinois */
+.tile-yellow { background: #F7DC6F; color: #222; }        /* Atlantic/Ventnor/Marvin Gardens */
+.tile-green { background: #229954; color: #fff; }         /* Pacific/North Carolina/Pennsylvania */
+.tile-darkblue { background: #154360; color: #fff; }      /* Park Place/Boardwalk */
+
+/* Railroads and utilities */
+.tile-railroad { background: #fff; color: #222; border-style: dashed; }
+.tile-utility { background: #f8f8f8; color: #222; }
+
+/* Special tiles */
+.tile-go, .tile-jail, .tile-parking, .tile-gotojail {
+  background: #D5DBDB;
+  color: #222;
+  font-size: 1.1em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  border: 3px solid #222;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-chest, .tile-chance {
+  background: #F9E79F;
+  color: #CB4335;
+  font-style: italic;
+  font-weight: bold;
+  border: 2px dashed #CB4335;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-tax {
+  background: #f8d7da;
+  color: #721c24;
+  font-weight: bold;
+  border: 2px solid #721c24;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Property tile with color bar */
+.tile-property {
+  background: #fff;
+  border: 2px solid #222;
+  border-radius: 6px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 60px;
+  min-height: 60px;
+  box-sizing: border-box;
+  padding-top: 18px;
+}
+
+.tile-property .color-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 16px;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+/* Color bars for each property group */
+.tile-brown .color-bar { background: #6C3483; }
+.tile-lightblue .color-bar { background: #5DADE2; }
+.tile-pink .color-bar { background: #C39BD3; }
+.tile-orange .color-bar { background: #F5B041; }
+.tile-red .color-bar { background: #CB4335; }
+.tile-yellow .color-bar { background: #F7DC6F; }
+.tile-green .color-bar { background: #229954; }
+.tile-darkblue .color-bar { background: #154360; }
+
+/* Property name and price styling */
+.tile-property .property-name {
+  font-weight: bold;
+  font-size: 1em;
+  text-align: center;
+  margin: 4px 0 2px 0;
+  letter-spacing: 0.5px;
+}
+
+.tile-property .property-price {
+  font-style: italic;
+  font-size: 0.9em;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* Railroad and utility tiles */
+.tile-railroad, .tile-utility {
+  background: #fff;
+  border: 2px solid #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.tile-railroad .icon-railroad,
+.tile-utility .icon-utility {
+  margin-bottom: 4px;
+}
+
+/* Icon placeholders for markup */
+.tile .icon-railroad {
+  width: 20px;
+  height: 20px;
+  background: url('/icons/train.svg') no-repeat center/contain;
+  margin-bottom: 2px;
+}
+
+.tile .icon-utility {
+  width: 20px;
+  height: 20px;
+  background: url('/icons/lightbulb.svg') no-repeat center/contain;
+  margin-bottom: 2px;
+}
+
+.tile .icon-tax {
+  width: 18px;
+  height: 18px;
+  background: url('/icons/dollar.svg') no-repeat center/contain;
+  margin-bottom: 2px;
+}
+
+.tile .icon-chance {
+  width: 18px;
+  height: 18px;
+  background: url('/icons/question.svg') no-repeat center/contain;
+  margin-bottom: 2px;
+}
+
+.tile .icon-chest {
+  width: 18px;
+  height: 18px;
+  background: url('/icons/chest.svg') no-repeat center/contain;
+  margin-bottom: 2px;
+}
+
+/* Player token styling remains unchanged */
+.player-token {
+  font-size: 1.5em;
+  margin-top: 4px;
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px 6px;
+  box-shadow: 0 0 4px #222;
+}

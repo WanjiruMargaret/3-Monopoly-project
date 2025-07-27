@@ -1,5 +1,3 @@
-// src/Game/GameLogic.jsx
-
 export const TILE_TYPES = {
   GO: 'GO',
   PROPERTY: 'PROPERTY',
@@ -51,11 +49,11 @@ const chestCards = [
 
 export function handleTileAction({ tile, player, dispatch }) {
   switch (tile.type) {
-    case TILE_TYPES.GO:
+    case 'GO':
       dispatch({ type: 'ADD_MONEY', payload: { playerId: player.id, amount: 200 } });
       break;
 
-    case TILE_TYPES.PROPERTY:
+    case 'PROPERTY':
       if (!tile.owner) {
         const wantsToBuy = window.confirm(`${player.name}, buy ${tile.name} for $${tile.price}?`);
         if (wantsToBuy && player.money >= tile.price) {
@@ -66,19 +64,19 @@ export function handleTileAction({ tile, player, dispatch }) {
       }
       break;
 
-    case TILE_TYPES.CHANCE:
+    case 'CHANCE':
       const chance = chanceCards[Math.floor(Math.random() * chanceCards.length)];
       alert(`Chance: ${chance.text}`);
       chance.action(player, dispatch);
       break;
 
-    case TILE_TYPES.CHEST:
+    case 'CHEST':
       const chest = chestCards[Math.floor(Math.random() * chestCards.length)];
       alert(`Community Chest: ${chest.text}`);
       chest.action(player, dispatch);
       break;
 
-    case TILE_TYPES.JAIL:
+    case 'JAIL':
       alert(`${player.name} is just visiting jail.`);
       break;
 
@@ -118,28 +116,39 @@ export const gameReducer = (state, action) => {
       };
 
     case 'PAY_RENT':
+      // Find the player paying rent and the player receiving rent
+      const payingPlayer = state.players.find(p => p.id === action.payload.fromId);
+      const receivingPlayer = state.players.find(p => p.id === action.payload.toId);
+
+      // Ensure the players are updated with the rent payment
       return {
         ...state,
         players: state.players.map(p => {
-          if (p.id === action.payload.fromId) return { ...p, money: p.money - action.payload.amount };
-          if (p.id === action.payload.toId) return { ...p, money: p.money + action.payload.amount };
+          if (p.id === action.payload.fromId) {
+            return { ...p, money: p.money - action.payload.amount };
+          }
+          if (p.id === action.payload.toId) {
+            return { ...p, money: p.money + action.payload.amount };
+          }
           return p;
         }),
-      };
-
-    case 'MOVE_PLAYER':
-      return {
-        ...state,
-        players: state.players.map(p =>
-          p.id === action.payload.playerId ? { ...p, position: action.payload.toIndex } : p
-        ),
+        tiles: [...state.tiles], // No change to tiles here
       };
 
     case 'NEXT_TURN':
-      return {
-        ...state,
-        currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
-      };
+      const nextIndex = (state.currentPlayerIndex + 1) % state.players.length;
+      return { ...state, currentPlayerIndex: nextIndex };
+
+    case 'SKIP_TURN_FOR_JAIL':
+      const updatedPlayers = [...state.players];
+      const player = updatedPlayers.find(p => p.id === action.payload);
+      if (player.turnsInJail > 0) {
+        player.turnsInJail -= 1;
+      }
+      return { ...state, players: updatedPlayers };
+
+    case 'LOAD_SAVED_STATE':
+      return action.payload;
 
     default:
       return state;

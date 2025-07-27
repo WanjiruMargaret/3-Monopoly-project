@@ -1,47 +1,92 @@
+import tiles from "../../constants/tiles";
 import React from "react";
 import Tile from "./Tile";
-import { tiles } from "../../Game/GameLogic";
+import "../../style/board.css";
 
 export default function Board({ state, dispatch }) {
-  const { players, currentPlayerIndex } = state;
-  const currentPlayer = players[currentPlayerIndex];
-
-  // Function to handle rolling the dice for the current player
-  const handleRollDice = () => {
-    // Roll dice action, which will also move the player
-    const roll = Math.floor(Math.random() * 6) + 1 + Math.floor(Math.random() * 6) + 1; // Dice roll
-    const newPosition = (currentPlayer.position + roll) % tiles.length; // Wrap around the board
-    dispatch({ type: "MOVE_PLAYER", payload: { playerId: currentPlayer.id, toIndex: newPosition } });
-
-    // Handle the tile action after moving
-    const tile = tiles[newPosition];
-    dispatch({ type: "NEXT_TURN" }); // Move to the next player after the current one completes their turn
-  };
+  const { players } = state;
+  const currentPlayer = players[state.currentPlayerIndex];
 
   return (
     <div
-      className="board"
-      style={{ display: "flex", flexWrap: "wrap", gap: "10px" }}
+      className={colorClass}
+      onClick={handleClick}
     >
-      {tiles.map((tile) => (
-        <div
-          key={tile.id}
-          style={{ border: "1px solid black", padding: "10px", width: "150px" }}
+      {property.color && (
+        <div className="color-bar"></div>
+      )}
+      <div className="property-name">{property.name}</div>
+      {property.price > 0 && (
+        <div className="property-price">${property.price}</div>
+      )}
+      {property.rent > 0 && (
+        <div className="property-rent">Rent ${property.rent}</div>
+      )}
+      {isOwned && owner && (
+        <div className="property-owner"></div>
+      )}
+      <div className="property-players">
+        {playersOnSpace.map(player => (
+          <div
+            key={player.id}
+            className="property-player"
+          ></div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function Board({ players, currentPlayer, dice, isRolling, onRollDice, onBuyProperty }) {
+  return (
+    <div className="board"div/>
+      {/* Top row */}
+      <div className="board-row-top">
+        {tiles.slice(20, 31).reverse().map((property, index) => (
+          <Property
+            key={30 - index}
+            property={property}
+            index={30 - index}
+            players={players}
+            isActive={players[currentPlayer].position === 30 - index}
+            onBuyProperty={onBuyProperty}
+          />
+        ))}
+      </div>
+
+      {/* Left column */}
+      <div className="board-col-left">
+        {tiles.slice(11, 20).map((property, index) => (
+          <Property
+            key={index + 11}
+            property={property}
+            index={index + 11}
+            players={players}
+            isActive={players[currentPlayer].position === index + 11}
+            onBuyProperty={onBuyProperty}
+          />
+        ))}
+      </div>
+
+      {/* Center area */}
+      <div className="board-center">
+        <div className="board-title">MONOPOLY</div>
+        <div className="board-dice">
+          <div className="dice">{dice[0]}</div>
+          <div className="dice">{dice[1]}</div>
+        </div>
+        <button
+          onClick={onRollDice}
+          disabled={isRolling}
+          className="board-roll-btn"
         >
-          <Tile tile={tile} player={currentPlayer} dispatch={dispatch} />
-          {players.map(
-            (p) =>
-              p.position === tile.id && (
-                <div key={p.id} style={{ fontWeight: "bold" }}>
-                  🎩 {p.name}
-                </div>
-              )
-          )}
+          {isRolling ? "Rolling..." : "Roll Dice"}
+        </button>
+        <div className="board-player-info">
+          <p>{players[currentPlayer].name}'s Turn</p>
+          <p>Moves: {dice[0] + dice[1]} steps</p>
         </div>
       ))}
-      
-      {/* Button to trigger dice roll for the current player */}
-      <button onClick={handleRollDice}>Roll Dice</button>
     </div>
   );
 }
