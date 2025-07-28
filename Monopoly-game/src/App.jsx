@@ -110,7 +110,7 @@ export default function App() {
 
   // New: Start game handler to initialize players from start screen
   const handleStartGame = (playersConfig) => {
-    dispatch({ type: "LOAD_SAVED_STATE", payload: { ...state, players: playersConfig } });
+    dispatch({ type: "LOAD_SAVED_STATE", payload: { players: playersConfig } });
     setGameStarted(true);
   };
 
@@ -122,7 +122,7 @@ export default function App() {
   // Main game UI after start
   return (
     <div className="app">
-      <h1>Monopoly Game MVP</h1>
+      <h1>Monopoly Game Board</h1>
 
       <Board
         state={state}

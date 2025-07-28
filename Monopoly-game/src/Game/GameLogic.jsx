@@ -112,7 +112,7 @@ export function gameReducer(state, action) {
     }
 
     case "LOAD_SAVED_STATE":
-      return action.payload;
+      return { ...state, ...action.payload,};
 
     default:
       return state;
