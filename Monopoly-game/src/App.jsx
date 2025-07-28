@@ -1,3 +1,7 @@
+
+
+// ✅ React & hooks
+
 import React, { useReducer, useState, useEffect } from "react";
 
 // ✅ Components
@@ -134,3 +138,4 @@ export default function App() {
     </div>
   );
 }
+
