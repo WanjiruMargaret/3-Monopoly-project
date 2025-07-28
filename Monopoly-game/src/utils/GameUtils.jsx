@@ -1,8 +1,9 @@
-export function rollDice() {
-  const die1 = Math.floor(Math.random() * 6) + 1;
-  const die2 = Math.floor(Math.random() * 6) + 1;
-  return [die1, die2];
-}
+// Re-exporting from submodules
+export { rollDice } from "./rollDice";
+export { handlePlayerMove } from "./handlePlayerMove";
+export { buyProperty } from "./buyProperty";
+
+// Players array
 export const initialPlayers = [
   {
     id: 1,
@@ -27,4 +28,3 @@ export const initialPlayers = [
     bankrupt: false,
   },
 ];
-

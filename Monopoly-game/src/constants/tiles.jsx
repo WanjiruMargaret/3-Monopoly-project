@@ -1,3 +1,4 @@
+
 const tiles = [
   { name: "GO", price: 0, rent: 0 },
   { name: "Mediterranean Avenue", price: 60, rent: 2, color: "brown" },

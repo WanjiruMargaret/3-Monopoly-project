@@ -26,5 +26,4 @@ export default function Dice({ dice, isRolling, onRollDice, currentPlayerName })
         Total: {dice[0] + dice[1]}
       </div>
     </div>
-  );
-}
+  )}

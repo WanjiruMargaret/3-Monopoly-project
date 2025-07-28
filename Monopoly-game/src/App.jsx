@@ -1,16 +1,19 @@
 
+
 // ✅ React & hooks
+
 import React, { useReducer, useState, useEffect } from "react";
 
 // ✅ Components
 import Dice from "./Components/dice/DiceForm";
 import Board from "./Components/Board/Board";
 import PlayerPanel from "./Components/Player/PlayerPanel";
+import StartScreen from "./Components/features/StartScreen"; // Import your start screen
 
 // ✅ Utilities
 import { rollDice, initialPlayers } from "./utils/GameUtils";
 import { tiles, gameReducer } from "./Game/GameLogic";
-
+import { buyProperty } from "./utils/buyProperty";
 
 // ✅ Initial reducer state
 const initialState = {
@@ -25,12 +28,16 @@ export default function App() {
   const [dice, setDice] = useState([1, 1]);
   const [isRolling, setIsRolling] = useState(false);
 
+  // New state: control whether the game has started or not
+  const [gameStarted, setGameStarted] = useState(false);
+
   // ✅ Load saved game
   useEffect(() => {
     const saved = localStorage.getItem("monopoly-game-state");
     if (saved) {
       try {
         dispatch({ type: "LOAD_SAVED_STATE", payload: JSON.parse(saved) });
+        setGameStarted(true); // If saved game found, skip start screen
       } catch (error) {
         console.error("Error loading saved game state:", error);
       }
@@ -39,8 +46,10 @@ export default function App() {
 
   // ✅ Save game on every state update
   useEffect(() => {
-    localStorage.setItem("monopoly-game-state", JSON.stringify(state));
-  }, [state]);
+    if (gameStarted) {
+      localStorage.setItem("monopoly-game-state", JSON.stringify(state));
+    }
+  }, [state, gameStarted]);
 
   // ✅ Alert if a card is drawn
   useEffect(() => {
@@ -61,7 +70,7 @@ export default function App() {
     setTimeout(() => {
       const currentPlayer = state.players[state.currentPlayerIndex];
 
-      // ✅ Skip bankrupt
+      // ✅ Skip if bankrupt
       if (currentPlayer.isBankrupt) {
         dispatch({ type: "NEXT_TURN" });
         setIsRolling(false);
@@ -99,25 +108,32 @@ export default function App() {
     });
   };
 
+  // New: Start game handler to initialize players from start screen
+  const handleStartGame = (playersConfig) => {
+    dispatch({ type: "LOAD_SAVED_STATE", payload: { ...state, players: playersConfig } });
+    setGameStarted(true);
+  };
+
+  // Show StartScreen if game not started
+  if (!gameStarted) {
+    return <StartScreen onStartGame={handleStartGame} />;
+  }
+
+  // Main game UI after start
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
 
-      {/* ✅ Board */}
       <Board
-        players={state.players}
-        currentPlayer={state.currentPlayerIndex}
+        state={state}
         dice={dice}
         isRolling={isRolling}
         onRollDice={handleDiceRoll}
         onBuyProperty={handleBuyProperty}
-        tiles={state.tiles}
       />
 
-      {/* ✅ Sidebar */}
       <PlayerPanel players={state.players} />
 
-      {/* ✅ Dice control */}
       <Dice dice={dice} onRoll={handleDiceRoll} />
     </div>
   );

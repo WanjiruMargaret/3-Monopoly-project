@@ -23,6 +23,7 @@ export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
   const tile = tiles[newPosition];
   updatedPlayer.position = newPosition;
 
+  // Handle tile logic
   switch (tile.type) {
     case "tax":
       updatedPlayer.balance -= 100;
@@ -45,10 +46,9 @@ export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
 
         // Optional: update owner's balance outside this function
         console.log(`${player.name} paid $${rent} rent to ${owner.name}`);
-
-        if (updatedPlayer.balance < 0) {
-          updatedPlayer.bankrupt = true;
-          updatedPlayer.properties = [];
+        if (player.balance < 0) {
+          player.bankrupt = true;
+          player.properties = [];
           console.log(`${player.name} went bankrupt!`);
         }
       }
@@ -65,4 +65,3 @@ export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
 
   return updatedPlayer;
 }
-
