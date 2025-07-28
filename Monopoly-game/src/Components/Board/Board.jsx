@@ -1,71 +1,96 @@
-import tiles from "../../constants/tiles";
+// src/Components/Board/Board.jsx
 import React from "react";
-import Tile from "./Tile";
+import tiles from "../../constants/tiles"; // default import matches your tiles export
 import "../../style/board.css";
 
-export default function Board({ state, dispatch }) {
-  const { players } = state;
-  const currentPlayer = players[state.currentPlayerIndex];
+// Property Component
+function Property({ property, index, players, isActive, onBuyProperty }) {
+  const playersOnSpace = players.filter(p => p.position === index);
+  const owner = players.find(p => p.properties.includes(index));
+  const isOwned = !!owner;
+
+  const handleClick = () => {
+    if (property.price > 0 && !isOwned && isActive) {
+      onBuyProperty(index);
+    }
+  };
+
+  const colorClass = property.color
+    ? `tile-property tile-${property.color}`
+    : "tile-property";
 
   return (
-    <div
-      className={colorClass}
-      onClick={handleClick}
-    >
-      {property.color && (
-        <div className="color-bar"></div>
-      )}
+    <div className={colorClass} onClick={handleClick}>
+      {property.color && <div className="color-bar"></div>}
       <div className="property-name">{property.name}</div>
-      {property.price > 0 && (
-        <div className="property-price">${property.price}</div>
-      )}
-      {property.rent > 0 && (
-        <div className="property-rent">Rent ${property.rent}</div>
-      )}
-      {isOwned && owner && (
-        <div className="property-owner"></div>
-      )}
+      {property.price > 0 && <div className="property-price">${property.price}</div>}
+      {property.rent > 0 && <div className="property-rent">Rent ${property.rent}</div>}
+      {isOwned && <div className="property-owner">🏠</div>}
+
+      {/* Show player tokens */}
       <div className="property-players">
         {playersOnSpace.map(player => (
           <div
             key={player.id}
             className="property-player"
-          ></div>
+            title={player.name}
+            style={{
+              backgroundColor: player.color || "gray",
+              border: "1px solid black",
+            }}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-export default function Board({ players, currentPlayer, dice, isRolling, onRollDice, onBuyProperty }) {
+// Main Board
+export default function Board({
+  players = [],
+  currentPlayer = 0,
+  dice = [0, 0],
+  isRolling = false,
+  onRollDice = () => {},
+  onBuyProperty = () => {},
+}) {
+  // Defensive: ensure currentPlayer is valid and players exist
+  const activePlayer = players[currentPlayer] || { position: -1 };
+
   return (
-    <div className="board"div/>
+    <div className="board">
       {/* Top row */}
       <div className="board-row-top">
-        {tiles.slice(20, 31).reverse().map((property, index) => (
-          <Property
-            key={30 - index}
-            property={property}
-            index={30 - index}
-            players={players}
-            isActive={players[currentPlayer].position === 30 - index}
-            onBuyProperty={onBuyProperty}
-          />
-        ))}
+        {tiles.slice(20, 31).reverse().map((property, i) => {
+          const index = 30 - i;
+          return (
+            <Property
+              key={index}
+              property={property}
+              index={index}
+              players={players}
+              isActive={activePlayer.position === index}
+              onBuyProperty={onBuyProperty}
+            />
+          );
+        })}
       </div>
 
       {/* Left column */}
       <div className="board-col-left">
-        {tiles.slice(11, 20).map((property, index) => (
-          <Property
-            key={index + 11}
-            property={property}
-            index={index + 11}
-            players={players}
-            isActive={players[currentPlayer].position === index + 11}
-            onBuyProperty={onBuyProperty}
-          />
-        ))}
+        {tiles.slice(11, 20).map((property, i) => {
+          const index = i + 11;
+          return (
+            <Property
+              key={index}
+              property={property}
+              index={index}
+              players={players}
+              isActive={activePlayer.position === index}
+              onBuyProperty={onBuyProperty}
+            />
+          );
+        })}
       </div>
 
       {/* Center area */}
@@ -83,12 +108,42 @@ export default function Board({ players, currentPlayer, dice, isRolling, onRollD
           {isRolling ? "Rolling..." : "Roll Dice"}
         </button>
         <div className="board-player-info">
-          <p>{players[currentPlayer].name}'s Turn</p>
+          <p>{activePlayer.name ? `${activePlayer.name}'s Turn` : "Waiting..."}</p>
           <p>Moves: {dice[0] + dice[1]} steps</p>
         </div>
-      ))}
+      </div>
+
+      {/* Right column */}
+      <div className="board-col-right">
+        {tiles.slice(31, 40).reverse().map((property, i) => {
+          const index = 39 - i;
+          return (
+            <Property
+              key={index}
+              property={property}
+              index={index}
+              players={players}
+              isActive={activePlayer.position === index}
+              onBuyProperty={onBuyProperty}
+            />
+          );
+        })}
+      </div>
+
+      {/* Bottom row */}
+      <div className="board-row-bottom">
+        {tiles.slice(0, 11).map((property, index) => (
+          <Property
+            key={index}
+            property={property}
+            index={index}
+            players={players}
+            isActive={activePlayer.position === index}
+            onBuyProperty={onBuyProperty}
+          />
+        ))}
+      </div>
     </div>
   );
 }
-
 

@@ -1,12 +1,122 @@
-# React + Vite
+🏠 Monopoly Game  
+A web-based digital version of the classic Monopoly board game, built using React. This project simulates turn-based gameplay with rolling dice, buying properties, collecting rent, and more.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+---
 
-Currently, two official plugins are available:
+## 📌 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🎲 **Roll Dice** to move around the board  
+- 🧍‍♂️ **Multiple Players** take turns in sequence  
+- 🏡 **Buy Properties** if unowned and you land on them  
+- 💸 **Pay Rent** when you land on another player’s property  
+- 🚓 **Go to Jail** and skip turns  
+- 🪙 **Chance** and 💌 **Community Chest** cards (basic effects added)  
+- 💀 **Bankruptcy Handling** – players with $0 can't move  
+- 💾 *(Planned)*: Save state with localStorage  
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧑‍🤝‍🧑 Team Members
+
+| Name     | Role                                      |
+|----------|-------------------------------------------|
+| Maggie   | 🧠 Game Logic Developer, Scrum Master      |
+| Emmanuel | 🔁 Game State Manager (Optional Backend)   |
+| Julius   | 💅 UI/UX Design Lead                      |
+| Wayne    | 🧪 Testing & Debugging                    |
+
+---
+
+## 🛠 Tech Stack
+
+- **React** (Functional Components + Hooks)
+- **JavaScript**
+- **CSS** (Board Layout and Tile Styling)
+- **Vite** (for fast bundling)
+- **JSON** files for tile and property data
+- **LocalStorage** (planned for game persistence)
+
+---
+
+## 📁 File Structure
+
+```
+src/
+├── App.jsx
+├── Components/
+│   ├── Board/
+│   │   ├── Board.jsx
+│   │   └── Tile.jsx
+│   ├── Dice/
+│   │   └── DiceForm.jsx
+│   └── Player/
+│       └── PlayerPanel.jsx
+├── constants/
+│   └── tiles.js
+├── utils/
+│   ├── gameUtils.js
+│   ├── MovePlayer.js
+│   └── GameLogic.js
+└── style/
+    └── board.css
+```
+
+---
+
+## ▶️ Getting Started
+
+1. **Clone the Repo**
+    ```bash
+    git clone https://github.com/your-username/monopoly-game.git
+    cd monopoly-game
+    ```
+2. **Install Dependencies**
+    ```bash
+    npm install
+    ```
+3. **Run the App**
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 🧠 Game Logic (Overview)
+
+Uses `useState` to manage:
+- Player turns
+- Dice rolls
+- Property ownership
+- Player positions and cash
+
+**Key logic functions:**
+- `rollDice()` — returns 2 random dice values
+- `handlePlayerMove()` — moves player based on roll
+- `handleTileAction()` — performs logic (rent, buy, jail, etc.)
+
+---
+
+## 📦 Future Improvements
+
+- Full support for house upgrades / hotels
+- Drag-and-drop player movement
+- Multiplayer over network (Socket.io)
+- Save/Resume game via localStorage or Firebase
+
+---
+
+## ✅ MVP Achievements
+
+- [x] Basic movement
+- [x] Dice roll functionality
+- [x] Buying & owning properties
+- [x] Paying rent
+- [x] Chance / Community Chest logic (basic effects)
+- [x] Skip turn when in jail
+- [x] Bankruptcy check
+
+---
+
+## 📝 License
+
+This project is for educational purposes

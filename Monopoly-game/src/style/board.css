@@ -1,194 +1,132 @@
 .board {
   display: grid;
-  grid-template-columns: repeat(11, 60px);
-  grid-template-rows: repeat(11, 60px);
-  gap: 2px;
-  background: #2e2e2e;
-  padding: 10px;
-  border-radius: 12px;
-  width: fit-content;
+  grid-template-areas:
+    "top top top"
+    "left center right"
+    "bottom bottom bottom";
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  gap: 0;
+  width: 900px;
   margin: 0 auto;
+  background: #fff;
+  border: 4px solid black;
 }
 
-.tile {
-  border: 2px solid #222;
-  border-radius: 6px;
-  background: #fff;
+.board-row-top {
+  grid-area: top;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.board-row-bottom {
+  grid-area: bottom;
+  display: flex;
+}
+
+.board-col-left {
+  grid-area: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 0.95em;
-  min-width: 60px;
-  min-height: 60px;
-  position: relative;
-  transition: box-shadow 0.2s;
-  padding: 6px 2px;
-  box-sizing: border-box;
 }
 
-/* Monopoly property colors (official palette) */
-.tile-brown { background: #6C3483; color: #fff; }         /* Mediterranean/Baltic */
-.tile-lightblue { background: #5DADE2; color: #fff; }     /* Oriental/Vermont/Connecticut */
-.tile-pink { background: #C39BD3; color: #fff; }          /* St. Charles/States/Virginia */
-.tile-orange { background: #F5B041; color: #222; }        /* St. James/Tennessee/New York */
-.tile-red { background: #CB4335; color: #fff; }           /* Kentucky/Indiana/Illinois */
-.tile-yellow { background: #F7DC6F; color: #222; }        /* Atlantic/Ventnor/Marvin Gardens */
-.tile-green { background: #229954; color: #fff; }         /* Pacific/North Carolina/Pennsylvania */
-.tile-darkblue { background: #154360; color: #fff; }      /* Park Place/Boardwalk */
-
-/* Railroads and utilities */
-.tile-railroad { background: #fff; color: #222; border-style: dashed; }
-.tile-utility { background: #f8f8f8; color: #222; }
-
-/* Special tiles */
-.tile-go, .tile-jail, .tile-parking, .tile-gotojail {
-  background: #D5DBDB;
-  color: #222;
-  font-size: 1.1em;
-  font-weight: bold;
-  letter-spacing: 1px;
-  border: 3px solid #222;
-  border-radius: 10px;
+.board-col-right {
+  grid-area: right;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column-reverse;
 }
 
-.tile-chest, .tile-chance {
-  background: #F9E79F;
-  color: #CB4335;
-  font-style: italic;
-  font-weight: bold;
-  border: 2px dashed #CB4335;
+.board-center {
+  grid-area: center;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  background-color: #f8f8f8;
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 20px;
+  border: 2px dashed #999;
 }
 
-.tile-tax {
-  background: #f8d7da;
-  color: #721c24;
+.board-title {
   font-weight: bold;
-  border: 2px solid #721c24;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-bottom: 10px;
 }
 
-/* Property tile with color bar */
+.board-dice {
+  display: flex;
+  gap: 10px;
+  font-size: 2rem;
+  margin: 10px 0;
+}
+
+.board-roll-btn {
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.board-player-info {
+  font-size: 0.9rem;
+}
+
+/* Tile styling */
 .tile-property {
-  background: #fff;
-  border: 2px solid #222;
-  border-radius: 6px;
-  position: relative;
+  width: 80px;
+  height: 80px;
+  border: 1px solid #888;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  min-width: 60px;
-  min-height: 60px;
+  justify-content: space-between;
+  padding: 5px;
   box-sizing: border-box;
-  padding-top: 18px;
+  position: relative;
+  background-color: #fff;
 }
 
-.tile-property .color-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
+.color-bar {
+  height: 10px;
   width: 100%;
-  height: 16px;
-  border-top-left-radius: 6px;
-  border-top-right-radius: 6px;
+  background-color: currentColor;
+  margin-bottom: 3px;
 }
 
-/* Color bars for each property group */
-.tile-brown .color-bar { background: #6C3483; }
-.tile-lightblue .color-bar { background: #5DADE2; }
-.tile-pink .color-bar { background: #C39BD3; }
-.tile-orange .color-bar { background: #F5B041; }
-.tile-red .color-bar { background: #CB4335; }
-.tile-yellow .color-bar { background: #F7DC6F; }
-.tile-green .color-bar { background: #229954; }
-.tile-darkblue .color-bar { background: #154360; }
-
-/* Property name and price styling */
-.tile-property .property-name {
+.property-name {
   font-weight: bold;
-  font-size: 1em;
-  text-align: center;
-  margin: 4px 0 2px 0;
-  letter-spacing: 0.5px;
+  font-size: 0.75rem;
 }
 
-.tile-property .property-price {
-  font-style: italic;
-  font-size: 0.9em;
-  text-align: center;
-  margin-top: 2px;
+.property-price,
+.property-rent {
+  font-size: 0.65rem;
 }
 
-/* Railroad and utility tiles */
-.tile-railroad, .tile-utility {
-  background: #fff;
-  border: 2px solid #222;
+.property-owner {
+  font-size: 0.75rem;
+  color: darkgreen;
+}
+
+.property-players {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.tile-railroad .icon-railroad,
-.tile-utility .icon-utility {
-  margin-bottom: 4px;
-}
-
-/* Icon placeholders for markup */
-.tile .icon-railroad {
-  width: 20px;
-  height: 20px;
-  background: url('/icons/train.svg') no-repeat center/contain;
-  margin-bottom: 2px;
-}
-
-.tile .icon-utility {
-  width: 20px;
-  height: 20px;
-  background: url('/icons/lightbulb.svg') no-repeat center/contain;
-  margin-bottom: 2px;
-}
-
-.tile .icon-tax {
-  width: 18px;
-  height: 18px;
-  background: url('/icons/dollar.svg') no-repeat center/contain;
-  margin-bottom: 2px;
-}
-
-.tile .icon-chance {
-  width: 18px;
-  height: 18px;
-  background: url('/icons/question.svg') no-repeat center/contain;
-  margin-bottom: 2px;
-}
-
-.tile .icon-chest {
-  width: 18px;
-  height: 18px;
-  background: url('/icons/chest.svg') no-repeat center/contain;
-  margin-bottom: 2px;
-}
-
-/* Player token styling remains unchanged */
-.player-token {
-  font-size: 1.5em;
+  flex-wrap: wrap;
+  gap: 4px;
   margin-top: 4px;
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  background: #fff;
-  border-radius: 50%;
-  padding: 2px 6px;
-  box-shadow: 0 0 4px #222;
 }
+
+.property-player {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+.tile-brown    { color: saddlebrown; }
+.tile-blue     { color: royalblue; }
+.tile-red      { color: crimson; }
+.tile-yellow   { color: goldenrod; }
+.tile-green    { color: forestgreen; }
+.tile-orange   { color: darkorange; }
+.tile-purple   { color: purple; }
+.tile-utility  { color: gray; }
+.tile-chest,
+.tile-chance   { color: #555; font-style: italic; }

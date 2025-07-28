@@ -78,3 +78,4 @@ export default function PlayerToken({ players, currentPlayer, dice }) {
     </div>
   )
 }
+

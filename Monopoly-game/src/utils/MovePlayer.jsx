@@ -12,26 +12,27 @@ export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
 
   // Move player
   let newPosition = (player.position + steps) % tiles.length;
+  let updatedPlayer = { ...player };
 
   // Passed GO?
   if (newPosition < player.position) {
-    player.balance += 200;
+    updatedPlayer.balance += 200;
     console.log(`${player.name} passed GO! +$200`);
   }
 
   const tile = tiles[newPosition];
-  player.position = newPosition;
+  updatedPlayer.position = newPosition;
 
   // Handle tile logic
   switch (tile.type) {
     case "tax":
-      player.balance -= 100;
+      updatedPlayer.balance -= 100;
       console.log(`${player.name} paid $100 tax.`);
       break;
 
     case "gotojail":
-      player.position = 10; // Jail index
-      player.turnsInJail = 2;
+      updatedPlayer.position = 10;
+      updatedPlayer.turnsInJail = 2;
       console.log(`${player.name} goes to jail for 2 turns.`);
       break;
 
@@ -39,30 +40,28 @@ export function handlePlayerMove(player, steps, tiles, _, allPlayers) {
       const owner = allPlayers.find(
         (p) => p.properties.includes(newPosition) && !p.bankrupt
       );
-      if (owner && owner.id !== player.id) {
+      if (owner && owner.id !== updatedPlayer.id) {
         const rent = tile.rent || 25;
-        player.balance -= rent;
-        owner.balance += rent;
+        updatedPlayer.balance -= rent;
+
+        // Optional: update owner's balance outside this function
         console.log(`${player.name} paid $${rent} rent to ${owner.name}`);
         if (player.balance < 0) {
-          return {
-            ...player,
-            bankrupt: true,
-            properties: [],
-          };
+          player.bankrupt = true;
+          player.properties = [];
+          console.log(`${player.name} went bankrupt!`);
         }
       }
       break;
 
     case "chance":
     case "chest":
-      console.log(`${player.name} landed on ${tile.name}. (Future logic TBD)`);
+      console.log(`${player.name} landed on ${tile.name}.`);
       break;
 
-    // Free parking, GO, jail, utilities can be handled later
     default:
       break;
   }
 
-  return player;
+  return updatedPlayer;
 }

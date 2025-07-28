@@ -4,44 +4,57 @@ import React, { useReducer, useState, useEffect } from "react";
 import Dice from "./Components/dice/DiceForm";
 import Board from "./Components/Board/Board";
 import PlayerPanel from "./Components/Player/PlayerPanel";
+import StartScreen from "./Components/features/StartScreen"; // Import your start screen
 
 // ✅ Utilities
 import { rollDice, initialPlayers } from "./utils/GameUtils";
 import { tiles, gameReducer } from "./Game/GameLogic";
+import { buyProperty } from "./utils/buyProperty";
 
 // ✅ Initial reducer state
 const initialState = {
   players: initialPlayers,
   tiles: tiles,
   currentPlayerIndex: 0,
+  lastCardDrawn: null,
 };
 
 export default function App() {
-  // ✅ Game state managed by reducer
   const [state, dispatch] = useReducer(gameReducer, initialState);
-
-  // ✅ UI state
   const [dice, setDice] = useState([1, 1]);
   const [isRolling, setIsRolling] = useState(false);
 
-  // ✅ Load saved game if available
+  // New state: control whether the game has started or not
+  const [gameStarted, setGameStarted] = useState(false);
+
+  // ✅ Load saved game
   useEffect(() => {
     const saved = localStorage.getItem("monopoly-game-state");
     if (saved) {
       try {
         dispatch({ type: "LOAD_SAVED_STATE", payload: JSON.parse(saved) });
+        setGameStarted(true); // If saved game found, skip start screen
       } catch (error) {
         console.error("Error loading saved game state:", error);
       }
     }
   }, []);
 
-  // ✅ Save game on every state change
+  // ✅ Save game on every state update
   useEffect(() => {
-    localStorage.setItem("monopoly-game-state", JSON.stringify(state));
-  }, [state]);
+    if (gameStarted) {
+      localStorage.setItem("monopoly-game-state", JSON.stringify(state));
+    }
+  }, [state, gameStarted]);
 
-  // ✅ Handle dice roll and turn logic
+  // ✅ Alert if a card is drawn
+  useEffect(() => {
+    if (state.lastCardDrawn) {
+      alert(`CARD DRAWN:\n${state.lastCardDrawn.text}`);
+    }
+  }, [state.lastCardDrawn]);
+
+  // ✅ Handle dice roll
   const handleDiceRoll = () => {
     if (isRolling) return;
 
@@ -54,7 +67,7 @@ export default function App() {
       const currentPlayer = state.players[state.currentPlayerIndex];
 
       // ✅ Skip if bankrupt
-      if (currentPlayer.bankrupt) {
+      if (currentPlayer.isBankrupt) {
         dispatch({ type: "NEXT_TURN" });
         setIsRolling(false);
         return;
@@ -68,9 +81,8 @@ export default function App() {
         return;
       }
 
-      // ✅ Move player
+      // ✅ Move player and trigger tile logic
       const newPosition = (currentPlayer.position + steps) % state.tiles.length;
-
       dispatch({
         type: "MOVE_PLAYER",
         payload: { playerId: currentPlayer.id, toIndex: newPosition },
@@ -78,10 +90,10 @@ export default function App() {
 
       dispatch({ type: "NEXT_TURN" });
       setIsRolling(false);
-    }, 800); // Delay for animation
+    }, 800);
   };
 
-  // ✅ Handle property purchase
+  // ✅ Buy property
   const handleBuyProperty = (tileIndex) => {
     dispatch({
       type: "BUY_PROPERTY",
@@ -92,23 +104,32 @@ export default function App() {
     });
   };
 
+  // New: Start game handler to initialize players from start screen
+  const handleStartGame = (playersConfig) => {
+    dispatch({ type: "LOAD_SAVED_STATE", payload: { ...state, players: playersConfig } });
+    setGameStarted(true);
+  };
+
+  // Show StartScreen if game not started
+  if (!gameStarted) {
+    return <StartScreen onStartGame={handleStartGame} />;
+  }
+
+  // Main game UI after start
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
 
-      {/* ✅ Main board */}
       <Board
-        state={state}              // pass entire state object to Board
+        state={state}
         dice={dice}
         isRolling={isRolling}
         onRollDice={handleDiceRoll}
         onBuyProperty={handleBuyProperty}
       />
 
-      {/* ✅ Sidebar panel */}
       <PlayerPanel players={state.players} />
 
-      {/* ✅ Dice display */}
       <Dice dice={dice} onRoll={handleDiceRoll} />
     </div>
   );
