@@ -1,5 +1,3 @@
-
-
 import { useState } from "react";
 
 export default function StartScreen({ onStartGame }) {
@@ -25,13 +23,11 @@ export default function StartScreen({ onStartGame }) {
   };
 
   const handleStart = () => {
-    // Validate names
     if (playerNames.some((name) => name.trim() === "")) {
       alert("Please enter all player names.");
       return;
     }
 
-    // Prepare players config with colors (example color array)
     const colors = ["red", "blue", "green", "yellow"];
     const playersConfig = playerNames.map((name, i) => ({
       id: i + 1,
@@ -104,14 +100,12 @@ export default function StartScreen({ onStartGame }) {
         </div>
       </div>
 
-      {showRules && (
-        <RulesModal onClose={() => setShowRules(false)} />
-      )}
+      {showRules && <RulesModal onClose={() => setShowRules(false)} />}
     </div>
   );
 }
 
-// Extract the rules modal to keep code clean
+// ✅ Full rules now included
 function RulesModal({ onClose }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -127,8 +121,53 @@ function RulesModal({ onClose }) {
             </button>
           </div>
 
-          {/* ... rules content here ... */}
-          <p>...</p>
+          <div className="space-y-4 text-left text-gray-800">
+            <section>
+              <h3 className="text-lg font-bold text-blue-600">🎯 Objective</h3>
+              <p>
+                Be the last player with money by buying properties and collecting rent from other players.
+              </p>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-blue-600">🎲 Game Setup</h3>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Each player starts with $1,500</li>
+                <li>All players begin at GO</li>
+                <li>Turns rotate in order</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-blue-600">🎮 Gameplay</h3>
+              <ol className="list-decimal ml-5 space-y-1">
+                <li>Roll two dice and move your token</li>
+                <li>Buy any unowned property you land on</li>
+                <li>Pay rent if you land on another player's property</li>
+                <li>Collect $200 each time you pass GO</li>
+              </ol>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-blue-600">🏠 Properties</h3>
+              <ul className="list-disc ml-5 space-y-1">
+                <li>Buy properties to collect rent</li>
+                <li>Your color will show on owned properties</li>
+                <li>You can't buy if you don't have enough money</li>
+              </ul>
+            </section>
+
+            <section>
+              <h3 className="text-lg font-bold text-blue-600">💡 Special Tiles</h3>
+              <ul className="list-disc ml-5 space-y-1">
+                <li><strong>GO:</strong> Collect $200 when passing</li>
+                <li><strong>Jail:</strong> Stuck for 2 turns unless skipped</li>
+                <li><strong>Chance / Community Chest:</strong> Draw a random card</li>
+                <li><strong>Free Parking:</strong> Safe zone</li>
+                <li><strong>Go To Jail:</strong> Go directly to jail</li>
+              </ul>
+            </section>
+          </div>
 
           <div className="mt-6 text-center">
             <button
@@ -143,3 +182,4 @@ function RulesModal({ onClose }) {
     </div>
   );
 }
+
