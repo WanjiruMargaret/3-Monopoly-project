@@ -1,56 +1,123 @@
-import React, { useState } from "react";
-import DiceForm from "./Components/Dice/DiceForm";
+// ✅ React & hooks
+import React, { useReducer, useState, useEffect } from "react";
+
+// ✅ Components
+import Dice from "./Components/dice/DiceForm";
 import Board from "./Components/Board/Board";
 import PlayerPanel from "./Components/Player/PlayerPanel";
-import { handlePlayerMove } from "./utils/MovePlayer";
-import propertiesData from "./Components/Data/Properties";
-import { rollDice, initialPlayers } from "./utils/gameUtils";
+
+// ✅ Utilities
+import { rollDice, initialPlayers } from "./utils/GameUtils";
+import { tiles, gameReducer } from "./Game/GameLogic";
+
+
+// ✅ Initial reducer state
+const initialState = {
+  players: initialPlayers,
+  tiles: tiles,
+  currentPlayerIndex: 0,
+  lastCardDrawn: null,
+};
 
 export default function App() {
-  const [players, setPlayers] = useState(initialPlayers);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+  const [state, dispatch] = useReducer(gameReducer, initialState);
   const [dice, setDice] = useState([1, 1]);
-  const [properties, setProperties] = useState(propertiesData);
+  const [isRolling, setIsRolling] = useState(false);
 
-  const handleRollDice = () => {
-    const die1 = Math.ceil(Math.random() * 6);
-    const die2 = Math.ceil(Math.random() * 6);
-    const total = die1 + die2;
+  // ✅ Load saved game
+  useEffect(() => {
+    const saved = localStorage.getItem("monopoly-game-state");
+    if (saved) {
+      try {
+        dispatch({ type: "LOAD_SAVED_STATE", payload: JSON.parse(saved) });
+      } catch (error) {
+        console.error("Error loading saved game state:", error);
+      }
+    }
+  }, []);
 
+  // ✅ Save game on every state update
+  useEffect(() => {
+    localStorage.setItem("monopoly-game-state", JSON.stringify(state));
+  }, [state]);
+
+  // ✅ Alert if a card is drawn
+  useEffect(() => {
+    if (state.lastCardDrawn) {
+      alert(`CARD DRAWN:\n${state.lastCardDrawn.text}`);
+    }
+  }, [state.lastCardDrawn]);
+
+  // ✅ Handle dice roll
+  const handleDiceRoll = () => {
+    if (isRolling) return;
+
+    setIsRolling(true);
+    const [die1, die2] = rollDice();
+    const steps = die1 + die2;
     setDice([die1, die2]);
-    movePlayer(total);
-  };
 
-  const movePlayer = (steps) => {
-    setPlayers((prevPlayers) => {
-      const updated = [...prevPlayers];
-      const player = updated[currentPlayerIndex];
+    setTimeout(() => {
+      const currentPlayer = state.players[state.currentPlayerIndex];
 
-      // Skip if bankrupt
-      if (player.isBankrupt) return updated;
-
-      // Skip turn in jail
-      if (player.turnsInJail > 0) {
-        player.turnsInJail -= 1;
-        updated[currentPlayerIndex] = player;
-        return updated;
+      // ✅ Skip bankrupt
+      if (currentPlayer.isBankrupt) {
+        dispatch({ type: "NEXT_TURN" });
+        setIsRolling(false);
+        return;
       }
 
-      const updatedPlayer = handlePlayerMove(player, steps, properties, setProperties, updated);
-      updated[currentPlayerIndex] = updatedPlayer;
+      // ✅ Jail logic
+      if (currentPlayer.turnsInJail > 0) {
+        dispatch({ type: "SKIP_TURN_FOR_JAIL", payload: currentPlayer.id });
+        dispatch({ type: "NEXT_TURN" });
+        setIsRolling(false);
+        return;
+      }
 
-      return updated;
+      // ✅ Move player and trigger tile logic
+      const newPosition = (currentPlayer.position + steps) % state.tiles.length;
+      dispatch({
+        type: "MOVE_PLAYER",
+        payload: { playerId: currentPlayer.id, toIndex: newPosition },
+      });
+
+      dispatch({ type: "NEXT_TURN" });
+      setIsRolling(false);
+    }, 800);
+  };
+
+  // ✅ Buy property
+  const handleBuyProperty = (tileIndex) => {
+    dispatch({
+      type: "BUY_PROPERTY",
+      payload: {
+        playerId: state.players[state.currentPlayerIndex].id,
+        tileIndex,
+      },
     });
-
-    setCurrentPlayerIndex((i) => (i + 1) % players.length);
   };
 
   return (
     <div className="app">
       <h1>Monopoly Game MVP</h1>
-      <DiceForm dice={dice} onRoll={handleRollDice} />
-      <Board players={players} />
-      <PlayerPanel players={players} />
+
+      {/* ✅ Board */}
+      <Board
+        players={state.players}
+        currentPlayer={state.currentPlayerIndex}
+        dice={dice}
+        isRolling={isRolling}
+        onRollDice={handleDiceRoll}
+        onBuyProperty={handleBuyProperty}
+        tiles={state.tiles}
+      />
+
+      {/* ✅ Sidebar */}
+      <PlayerPanel players={state.players} />
+
+      {/* ✅ Dice control */}
+      <Dice dice={dice} onRoll={handleDiceRoll} />
     </div>
   );
 }

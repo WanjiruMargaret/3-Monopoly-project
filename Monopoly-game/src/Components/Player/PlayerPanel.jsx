@@ -6,7 +6,7 @@ export default function PlayerPanel({ players }) {
       {players.map((player, index) => (
         <div key={index} className="player-card">
           <h3>{player.name}</h3>
-          <p>💰 Money: ${player.money}</p>
+          <p>💰 Money: ${player.balance}</p>
           <p>📍 Position: {player.position}</p>
           <p>🏠 Properties: {player.properties.join(", ") || "None"}</p>
           <p>🚫 Bankrupt: {player.isBankrupt ? "Yes" : "No"}</p>
