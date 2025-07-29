@@ -123,6 +123,8 @@ export default function App() {
       <h1>Monopoly Game Board</h1>
 
       <Board
+        players={state.players}
+        currentPlayer={state.currentPlayerIndex}
         state={state}
         dice={dice}
         isRolling={isRolling}
